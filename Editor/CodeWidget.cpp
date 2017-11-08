@@ -1,5 +1,4 @@
 #include "CodeWidget.hpp"
-#include "LineNumbers.hpp"
 LineNumbers::LineNumbers(CodeWidget *code) : QWidget(code), m_code(code) {}
 LineNumbers::~LineNumbers() {}
 void LineNumbers::paintEvent(QPaintEvent * event) {

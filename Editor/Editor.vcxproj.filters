@@ -28,9 +28,6 @@
     <ClCompile Include="GeneratedFiles\Release\moc_Editor.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
-    <ClCompile Include="LineNumbers.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_CodeWidget.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
@@ -43,9 +40,6 @@
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Editor.hpp">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="LineNumbers.hpp">
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="CodeWidget.hpp">
