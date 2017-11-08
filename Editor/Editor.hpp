@@ -17,6 +17,8 @@ private:
 	QPushButton *m_saveAs;
 
 	QFile *m_current_file;
+protected:
+	virtual bool eventFilter(QObject *obj, QEvent *event) override;
 public:
 	Editor(QWidget *parent = Q_NULLPTR);
 	~Editor();

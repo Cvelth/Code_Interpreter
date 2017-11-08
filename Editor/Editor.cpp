@@ -3,6 +3,17 @@
 #include <QLayout>
 #include <QPushButton>
 #include <QMessageBox>
+bool Editor::eventFilter(QObject *obj, QEvent *event) {
+	if (event->type() == QEvent::KeyPress) {
+		auto key = static_cast<QKeyEvent*>(event);
+		if (key->key() == Qt::Key::Key_S && key->modifiers() == Qt::ControlModifier) {
+			save();
+			event->accept();
+			return true;
+		}
+	}
+	return QObject::eventFilter(obj, event);
+}
 Editor::Editor(QWidget *parent)	: QWidget(parent) {
 	QHBoxLayout *m_buttons = new QHBoxLayout();
 	QPushButton *m_new = new QPushButton("New");
@@ -47,6 +58,8 @@ void Editor::open() {
 	auto filename = QFileDialog::getOpenFileName(this, tr("Open source file"), "../../",
 												 tr("Perl source files (*.pl);;C++ source files (*.hpp, *.cpp);;"
 													"C source files (*.h *.c);;Assembler source files (*.asm, *.s)"));
+	if (filename == "")
+		return;
 	m_current_file = new QFile(filename);
 	if (!m_current_file->open(QIODevice::ReadOnly))
 		QMessageBox(QMessageBox::Warning, "File cannot be opened", "Some error occured during file openning process", 
@@ -71,6 +84,8 @@ void Editor::saveAs() {
 	auto filename = QFileDialog::getSaveFileName(this, tr("Save source file"), "../../",
 												 tr("Perl source files (*.pl);;C++ source files (*.hpp, *.cpp);;"
 													"C source files (*.h *.c);;Assembler source files (*.asm, *.s)"));
+	if (filename == "")
+		return;
 	m_current_file = new QFile(filename);
 	if (!m_current_file->open(QIODevice::WriteOnly))
 		QMessageBox(QMessageBox::Warning, "File cannot be opened", "Some error occured during file openning process",
