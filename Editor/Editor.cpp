@@ -31,8 +31,9 @@ Editor::Editor(QWidget *parent)	: QWidget(parent) {
 	m_layout->addLayout(m_buttons);
 	m_layout->addWidget(m_code_editor);
 	setLayout(m_layout);
-	resize(1280, 720);
 
+	resize(1280, 720);
+	setFont(QFont("Consolas", 15));
 	clear();
 
 	connect(m_new, &QPushButton::clicked, this, &Editor::clear);

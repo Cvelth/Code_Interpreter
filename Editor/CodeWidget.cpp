@@ -17,9 +17,7 @@ CodeWidget::CodeWidget(QWidget *parent)	: QPlainTextEdit(parent) {
 		if (rect.contains(viewport()->rect())) setLineNumberWidth();
 	});
 	connect(this, &CodeWidget::cursorPositionChanged, this, &CodeWidget::highlightCurrentLine);
-
-	setFont(QFont("Consolas", 18));
-
+	
 	setLineNumberWidth();
 	highlightCurrentLine();
 }
