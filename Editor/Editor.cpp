@@ -56,9 +56,9 @@ void Editor::clear() {
 #include <QFile>
 #include <QFileDialog>
 void Editor::open() {
-	auto filename = QFileDialog::getOpenFileName(this, tr("Open source file"), "../../",
-												 tr("Perl source files (*.plx, *.pl);;C++ source files (*.hpp, *.cpp);;"
-													"C source files (*.h *.c);;Assembler source files (*.asm, *.s)"));
+	auto filename = QFileDialog::getOpenFileName(this, tr("Open source file"), "../test_code/",
+												 tr("Perl source files (*.plx *.pm);;C++ source files (*.hpp *.cpp);;"
+													"C source files (*.h *.c);;Assembler source files (*.asm *.s)"));
 	if (filename == "")
 		return;
 	m_current_file = new QFile(filename);
@@ -82,9 +82,9 @@ void Editor::save() {
 		saveAs();
 }
 void Editor::saveAs() {
-	auto filename = QFileDialog::getSaveFileName(this, tr("Save source file"), "../../",
-												 tr("Perl source files (*.plx, *.pl);;C++ source files (*.hpp, *.cpp);;"
-													"C source files (*.h *.c);;Assembler source files (*.asm, *.s)"));
+	auto filename = QFileDialog::getSaveFileName(this, tr("Save source file"), "../test_code/",
+												 tr("Perl source files (*.plx *.pm);;C++ source files (*.hpp *.cpp);;"
+													"C source files (*.h *.c);;Assembler source files (*.asm *.s)"));
 	if (filename == "")
 		return;
 	m_current_file = new QFile(filename);
