@@ -115,7 +115,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="dll.hpp" />
     <ClInclude Include="Interpreter.hpp" />
+    <ClInclude Include="Lexeme.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Interpreter.cpp" />

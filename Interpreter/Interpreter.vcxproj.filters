@@ -14,6 +14,12 @@
     <ClInclude Include="Interpreter.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Lexeme.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="dll.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Interpreter.cpp">
