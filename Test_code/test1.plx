@@ -1,2 +1,3 @@
 #!./perl
-print "Hello World!"
+print "Hello, World!\n"
+print 'Nice too meet you =)'

@@ -9,6 +9,9 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
+    <Filter Include="Languages">
+      <UniqueIdentifier>{38fe5d63-3e6f-4e6b-8745-c9097f60be63}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Interpreter.hpp">
@@ -20,9 +23,18 @@
     <ClInclude Include="Token.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Perl.hpp">
+      <Filter>Languages</Filter>
+    </ClInclude>
+    <ClInclude Include="Default_lanuage.hpp">
+      <Filter>Languages</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Interpreter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Lexical_analyzer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
