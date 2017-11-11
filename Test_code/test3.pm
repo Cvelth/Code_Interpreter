@@ -6,7 +6,7 @@ sub new {
 	my $class = shift;
 	my $self = {@_};
 	bless ($self, $class);
-	$Population++;
+	$Population += 1;
 	return $self;
 }
 

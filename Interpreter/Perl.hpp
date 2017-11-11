@@ -20,6 +20,6 @@ namespace lang {
 		".", "=", ","
 	};
 	const std::set<std::string> operators_2 = {
-		"=>", "->", "++"
+		"=>", "->", "+="
 	};
 }
