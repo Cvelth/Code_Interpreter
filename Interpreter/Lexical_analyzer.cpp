@@ -173,7 +173,7 @@ void clean_tokens(std::list<Token> &source) {
 			}
 		}
 }
-std::list<Token> lexical_analisys(std::string const& source) {
+std::list<Token> lexical_analysis(std::string const& source) {
 	std::list<Token> res{source};
 	separate_comments_and_strings(res);
 	split_on_separators(res, " \t\n");
