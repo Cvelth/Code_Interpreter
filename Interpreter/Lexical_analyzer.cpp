@@ -114,7 +114,7 @@ void unite_operators(std::list<Token> &source) {
 		}
 }
 bool check_name(std::string const& source) {
-	if (!isalpha(source[0])) return false;
+	if (!isalpha(source[0]) && !source[0] == '_') return false;
 	for (size_t i = 1; i < source.size(); i++)
 		if (!isalnum(source[i]) && !source[i] == '_') return false;
 	return true;
