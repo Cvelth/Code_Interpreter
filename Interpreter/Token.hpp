@@ -6,7 +6,8 @@ enum class TokenType {
 	commentary,
 	string_literal,
 	reserved_word,
-	semicolon
+	semicolon,
+	binary_operator,
 };
 struct Token {
 	std::string name;

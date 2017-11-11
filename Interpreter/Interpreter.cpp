@@ -99,6 +99,21 @@ void differenciate_separators(std::list<Token> &source, std::string const& separ
 					i = 0;
 				}
 }
+void unite_operators(std::list<Token> &source) {
+	auto it1 = source.begin();
+	auto it2 = it1; it2++;
+	for (; it2 != source.end(); it1++, it2++)
+		if (lang::operators_2.find(it1->name + it2->name) != lang::operators_2.end()) {
+			Token temp = it1->name + it2->name;
+			temp.type = TokenType::binary_operator;
+
+			source.insert(it2, temp);
+			source.erase(it1);
+			source.erase(it2);
+			it1 = source.begin();
+			it2 = it1; it2++;
+		}
+}
 void classify_tokens(std::list<Token> &source) {
 	for (auto it = source.begin(); it != source.end(); it++)
 		if (it->type == TokenType::unknown) {
@@ -106,6 +121,9 @@ void classify_tokens(std::list<Token> &source) {
 				it->type = TokenType::reserved_word;
 			else if (it->name == ";")
 				it->type = TokenType::semicolon;
+			else if (lang::operators_1.find(it->name) != lang::operators_1.end()
+					 || lang::operators_2.find(it->name) != lang::operators_2.end())
+				it->type = TokenType::binary_operator;
 		}
 }
 void clean_tokens(std::list<Token> &source) {
@@ -128,6 +146,7 @@ std::list<Token> lexical_analisys(std::string const& source) {
 	differenciate_separators(res, ";=>.-()[]{}+,");
 	classify_tokens(res);
 	clean_tokens(res);
+	unite_operators(res);
 	return res;
 }
 std::string interpret(std::string const& source) {

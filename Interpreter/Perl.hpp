@@ -10,6 +10,12 @@ namespace lang {
 	const std::set<std::string> reserved_words = {
 		"print", "use", "my",
 		"package", "sub", "bless", "shift", "return"
-		"our", "foreach"
+		"our", "foreach", "new"
+	};
+	const std::set<std::string> operators_1 = {
+		".", "=", ","
+	};
+	const std::set<std::string> operators_2 = {
+		"=>", "->"
 	};
 }
