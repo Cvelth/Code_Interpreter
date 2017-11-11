@@ -20,8 +20,7 @@ public:
 	Node* graph;
 	Syntax(std::list<Token> const& source);
 private:
-	std::list<Node*> parse_brackets(std::list<Node*> source);
-	Node* parse_semicolons(std::list<Node*> source);
+	std::list<Node*> parse_brackets(std::list<Node*> source, char bracket_type = 0);
 	Node* parse_graph(std::list<Node*> source);
 	Node* parse_operators(std::list<Node*> source);
 };

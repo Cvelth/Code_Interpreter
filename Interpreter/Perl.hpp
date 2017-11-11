@@ -13,8 +13,8 @@ namespace lang {
 namespace lang {
 	const std::set<std::string> reserved_words = {
 		"print", "use", "my",
-		"package", "sub", "bless", "shift", "return"
-		"our", "foreach", "new"
+		"package", "sub", "bless", "shift", "return",
+		"our", "foreach"
 	};
 	const std::set<std::string> operators_1 = {
 		".", "=", ","
