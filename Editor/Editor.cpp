@@ -107,7 +107,8 @@ void Editor::saveAs() {
 void Editor::compile() {
 	try {
 		interpret(m_code_editor->getSource().toStdString());
-	} catch (std::exception&) {
+	} catch (std::exception &e) {
+		e.what();
 		exit(EXIT_FAILURE);
 	}
 }
