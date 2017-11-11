@@ -117,6 +117,7 @@
   <ItemGroup>
     <ClInclude Include="dll.hpp" />
     <ClInclude Include="Interpreter.hpp" />
+    <ClInclude Include="Perl.hpp" />
     <ClInclude Include="Token.hpp" />
   </ItemGroup>
   <ItemGroup>

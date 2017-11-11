@@ -1,4 +1,6 @@
 #include "Interpreter.hpp"
+#include "Perl.hpp"
+using namespace lang;
 void separate_comments_and_strings(std::list<Token> &source) {
 	size_t commentary = 0;
 	size_t string = 0;
@@ -6,9 +8,9 @@ void separate_comments_and_strings(std::list<Token> &source) {
 	for (auto it = source.begin(); it != source.end(); it++) {
 		if (it->type == TokenType::unknown)
 			for (size_t i = 0; i < (*it)->size(); i++) {
-				if ((*it)->at(i) == '#' && !commentary && !string && !chars)
+				if ((*it)->at(i) == comment_start && !commentary && !string && !chars)
 					commentary = i + 1;
-				if ((*it)->at(i) == '\n' && commentary) {
+				if ((*it)->at(i) == comment_end && commentary) {
 					Token prev = (*it)->substr(0, commentary - 1);
 					Token temp = (*it)->substr(commentary, i - commentary);
 					temp.type = TokenType::commentary;
@@ -22,7 +24,7 @@ void separate_comments_and_strings(std::list<Token> &source) {
 					i = 0;
 					commentary = 0;
 				}
-				if ((*it)->at(i) == '"' && !commentary && !chars)
+				if ((*it)->at(i) == string_literal && !commentary && !chars)
 					if (!string)
 						string = i + 1;
 					else {
@@ -39,7 +41,7 @@ void separate_comments_and_strings(std::list<Token> &source) {
 						i = 0;
 						string = 0;
 					}
-				if ((*it)->at(i) == '\'' && !commentary && !string)
+				if ((*it)->at(i) == chars_literal && !commentary && !string)
 					if (!chars)
 						chars = i + 1;
 					else {
