@@ -2,10 +2,11 @@
 void separate_comments_and_strings(std::list<Token> &source) {
 	size_t commentary = 0;
 	size_t string = 0;
+	size_t chars = 0;
 	for (auto it = source.begin(); it != source.end(); it++) {
 		if (it->type == TokenType::unknown)
 			for (size_t i = 0; i < (*it)->size(); i++) {
-				if ((*it)->at(i) == '#' && !commentary && !string)
+				if ((*it)->at(i) == '#' && !commentary && !string && !chars)
 					commentary = i + 1;
 				if ((*it)->at(i) == '\n' && commentary) {
 					Token prev = (*it)->substr(0, commentary - 1);
@@ -21,7 +22,7 @@ void separate_comments_and_strings(std::list<Token> &source) {
 					i = 0;
 					commentary = 0;
 				}
-				if ((*it)->at(i) == '"' && !commentary)
+				if ((*it)->at(i) == '"' && !commentary && !chars)
 					if (!string)
 						string = i + 1;
 					else {
@@ -37,6 +38,23 @@ void separate_comments_and_strings(std::list<Token> &source) {
 						source.erase(del);
 						i = 0;
 						string = 0;
+					}
+				if ((*it)->at(i) == '\'' && !commentary && !string)
+					if (!chars)
+						chars = i + 1;
+					else {
+						Token prev = (*it)->substr(0, chars - 1);
+						Token temp = (*it)->substr(chars, i - chars);
+						temp.type = TokenType::string_literal;
+						Token next = (*it)->substr(i + 1, (*it)->size() - i);
+						source.insert(it, prev);
+						source.insert(it, temp);
+						source.insert(it, next);
+						auto del = it;
+						it--;
+						source.erase(del);
+						i = 0;
+						chars = 0;
 					}
 			}
 		if (commentary)
