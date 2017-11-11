@@ -3,6 +3,7 @@
 #include <QLayout>
 #include <QPushButton>
 #include <QMessageBox>
+#include <QSplitter>
 bool Editor::eventFilter(QObject *obj, QEvent *event) {
 	if (event->type() == QEvent::KeyPress) {
 		auto key = static_cast<QKeyEvent*>(event);
@@ -29,10 +30,23 @@ Editor::Editor(QWidget *parent)	: QWidget(parent) {
 	m_buttons->addWidget(m_compile, 1);
 
 	m_code_editor = new CodeWidget();
-	m_layout = new QVBoxLayout();
-	m_layout->addLayout(m_buttons);
-	m_layout->addWidget(m_code_editor);
-	setLayout(m_layout);
+	m_upper_layout = new QVBoxLayout();
+	m_upper_layout->addLayout(m_buttons);
+	m_upper_layout->addWidget(m_code_editor);
+	m_upper_widget = new QWidget();
+	m_upper_widget->setLayout(m_upper_layout);
+
+	m_error_widget = new QPlainTextEdit();
+
+	m_splitter = new QSplitter(Qt::Orientation::Vertical);
+	m_splitter->addWidget(m_upper_widget);
+	m_splitter->addWidget(m_error_widget);
+	m_splitter->setStretchFactor(0, 5);
+	m_splitter->setStretchFactor(1, 2);
+
+	m_main_layout = new QVBoxLayout();
+	m_main_layout->addWidget(m_splitter);	
+	setLayout(m_main_layout);
 
 	resize(1280, 720);
 	setFont(QFont("Consolas", 15));
@@ -45,13 +59,21 @@ Editor::Editor(QWidget *parent)	: QWidget(parent) {
 	connect(m_compile, &QPushButton::clicked, this, &Editor::compile);
 }
 Editor::~Editor() {
-	delete m_code_editor;
-
 	delete m_new;
 	delete m_open;
 	delete m_save;
 	delete m_saveAs;
 	delete m_compile;
+
+	delete m_buttons;
+	delete m_upper_layout;
+	delete m_main_layout;
+
+	delete m_code_editor;
+	delete m_error_widget;
+
+	delete m_upper_widget;
+	delete m_splitter;
 
 	if (m_current_file) delete m_current_file;
 }
@@ -106,9 +128,16 @@ void Editor::saveAs() {
 #include "..\Interpreter\Interpreter.hpp"
 void Editor::compile() {
 	try {
-		interpret(m_code_editor->getSource().toStdString());
+		m_error_widget->clear();
+		m_error_widget->appendPlainText("Compilation started...");
+
+		m_error_widget->appendPlainText("Lexical Analysis started...");
+		auto lexemes = lexical_analysis(m_code_editor->getSource().toStdString());
+		m_error_widget->appendPlainText("Lexical Analysis successful...");
+
+		m_error_widget->appendPlainText("Compilation successful...");
 	} catch (std::exception &e) {
-		e.what();
-		exit(EXIT_FAILURE);
+		m_error_widget->appendPlainText(QString("\t") + e.what());
+		m_error_widget->appendPlainText("Error occured. Terminating compilation...");
 	}
 }

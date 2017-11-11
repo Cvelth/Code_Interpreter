@@ -5,12 +5,21 @@ class QVBoxLayout;
 class QHBoxLayout;
 class QPushButton;
 class QFile;
+class QSplitter;
+class QPlainTextEdit;
 class Editor : public QWidget {
 	Q_OBJECT
 private:
 	CodeWidget *m_code_editor;
-	QVBoxLayout *m_layout;
+	QPlainTextEdit *m_error_widget;
+
+	QSplitter *m_splitter;
+	QWidget *m_upper_widget;
+
+	QVBoxLayout *m_main_layout;
+	QVBoxLayout *m_upper_layout;
 	QHBoxLayout *m_buttons;
+
 	QPushButton *m_new;
 	QPushButton *m_open;
 	QPushButton *m_save;
