@@ -12,7 +12,8 @@ enum class TokenType {
 	type_name,
 	variable_name,
 	list_name,
-	hash_name
+	hash_name,
+	bracket
 };
 struct Token {
 	std::string name;

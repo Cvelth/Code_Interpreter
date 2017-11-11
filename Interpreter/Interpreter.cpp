@@ -151,6 +151,8 @@ TokenType classify_token(std::string const& name) {
 	else if (lang::operators_1.find(name) != lang::operators_1.end()
 			 || lang::operators_2.find(name) != lang::operators_2.end())
 		return TokenType::binary_operator;
+	else if (name == "(" || name == ")" || name == "[" || name == "]" || name == "{" || name == "}")
+		return TokenType::bracket;
 	else
 		return classify_name(name);
 }
@@ -177,9 +179,9 @@ std::list<Token> lexical_analisys(std::string const& source) {
 	separate_comments_and_strings(res);
 	split_on_separators(res, " \t\n");
 	differenciate_separators(res, ";=>.-()[]{}+,");
-	classify_tokens(res);
 	clean_tokens(res);
 	unite_operators(res);
+	classify_tokens(res);
 	return res;
 }
 std::string interpret(std::string const& source) {
