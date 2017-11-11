@@ -14,7 +14,7 @@ void separate_comments_and_strings(std::list<Token> &source) {
 					Token prev = (*it)->substr(0, commentary - 1);
 					Token temp = (*it)->substr(commentary, i - commentary);
 					temp.type = TokenType::commentary;
-					Token next = (*it)->substr(i + 1, (*it)->size() - i);
+					Token next = (*it)->substr(i + 1);
 					source.insert(it, prev);
 					source.insert(it, temp);
 					source.insert(it, next);
@@ -31,12 +31,12 @@ void separate_comments_and_strings(std::list<Token> &source) {
 						Token prev = (*it)->substr(0, string - 1);
 						Token temp = (*it)->substr(string, i - string);
 						temp.type = TokenType::string_literal;
-						Token next = (*it)->substr(i + 1, (*it)->size() - i);
+						Token next = (*it)->substr(i + 1);
 						source.insert(it, prev);
 						source.insert(it, temp);
 						source.insert(it, next);
 						auto del = it;
-						it--;
+						it--; it--;
 						source.erase(del);
 						i = 0;
 						string = 0;
@@ -48,12 +48,12 @@ void separate_comments_and_strings(std::list<Token> &source) {
 						Token prev = (*it)->substr(0, chars - 1);
 						Token temp = (*it)->substr(chars, i - chars);
 						temp.type = TokenType::string_literal;
-						Token next = (*it)->substr(i + 1, (*it)->size() - i);
+						Token next = (*it)->substr(i + 1);
 						source.insert(it, prev);
 						source.insert(it, temp);
 						source.insert(it, next);
 						auto del = it;
-						it--;
+						it--; it--;
 						source.erase(del);
 						i = 0;
 						chars = 0;
@@ -71,15 +71,42 @@ void split_on_separators(std::list<Token> &source, std::string const& separators
 			for (size_t i = 0; i < (*it)->size(); i++)
 				if (separators.find((*it)->at(i)) != std::string::npos) {
 					Token prev = (*it)->substr(0, i);
-					Token next = (*it)->substr(i + 1, (*it)->size());
+					Token next = (*it)->substr(i + 1);
 
 					source.insert(it, prev);
 					source.insert(it, next);
 					auto del = it;
-					it--;
+					it--; it--;
 					source.erase(del);
 					i = 0;
 				}
+}
+void differenciate_separators(std::list<Token> &source, std::string const& separators) {
+	for (auto it = source.begin(); it != source.end(); it++)
+		if (it->type == TokenType::unknown)
+			for (size_t i = 0; i < (*it)->size(); i++)
+				if (separators.find((*it)->at(i)) != std::string::npos) {
+					Token prev = (*it)->substr(0, i);
+					Token temp = std::string{(*it)->at(i)};
+					Token next = (*it)->substr(i + 1);
+
+					source.insert(it, prev);
+					source.insert(it, temp);
+					source.insert(it, next);
+					auto del = it;
+					it--; it--;
+					source.erase(del);
+					i = 0;
+				}
+}
+void classify_tokens(std::list<Token> &source) {
+	for (auto it = source.begin(); it != source.end(); it++)
+		if (it->type == TokenType::unknown) {
+			if (lang::reserved_words.find(it->name) != lang::reserved_words.end())
+				it->type = TokenType::reserved_word;
+			else if (it->name == ";")
+				it->type = TokenType::semicolon;
+		}
 }
 void clean_tokens(std::list<Token> &source) {
 	for (auto it = source.begin(); it != source.end(); it++)
@@ -98,6 +125,8 @@ std::list<Token> lexical_analisys(std::string const& source) {
 	std::list<Token> res{source};
 	separate_comments_and_strings(res);
 	split_on_separators(res, " \t\n");
+	differenciate_separators(res, ";=>.-()[]{}+,");
+	classify_tokens(res);
 	clean_tokens(res);
 	return res;
 }
