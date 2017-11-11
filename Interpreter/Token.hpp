@@ -1,5 +1,6 @@
 #pragma once
 #include "dll.hpp"
+#include <string>
 enum class TokenType {
 	unknown,
 };

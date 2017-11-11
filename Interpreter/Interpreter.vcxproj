@@ -117,7 +117,7 @@
   <ItemGroup>
     <ClInclude Include="dll.hpp" />
     <ClInclude Include="Interpreter.hpp" />
-    <ClInclude Include="Lexeme.hpp" />
+    <ClInclude Include="Token.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Interpreter.cpp" />

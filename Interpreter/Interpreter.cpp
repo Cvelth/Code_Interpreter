@@ -1,8 +1,8 @@
 #include "Interpreter.hpp"
-std::list<Lexeme> lexical_analisys(std::string const& source) {
+std::list<Token> lexical_analisys(std::string const& source) {
 	
 
-	return std::list<Lexeme>();
+	return std::list<Token>();
 }
 std::string interpret(std::string const& source) {
 	auto lexemes = lexical_analisys(source);

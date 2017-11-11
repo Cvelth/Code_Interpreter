@@ -14,10 +14,10 @@
     <ClInclude Include="Interpreter.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Lexeme.hpp">
+    <ClInclude Include="dll.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="dll.hpp">
+    <ClInclude Include="Token.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
