@@ -15,6 +15,7 @@ private:
 	QPushButton *m_open;
 	QPushButton *m_save;
 	QPushButton *m_saveAs;
+	QPushButton *m_compile;
 
 	QFile *m_current_file;
 protected:
@@ -27,4 +28,5 @@ private slots:
 	void open();
 	void save();
 	void saveAs();
+	void compile();
 };

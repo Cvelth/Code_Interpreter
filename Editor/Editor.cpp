@@ -25,6 +25,8 @@ Editor::Editor(QWidget *parent)	: QWidget(parent) {
 	QPushButton *m_saveAs = new QPushButton("Save as");
 	m_buttons->addWidget(m_saveAs, 1);
 	m_buttons->addStretch(3);
+	QPushButton *m_compile = new QPushButton("Compile");
+	m_buttons->addWidget(m_compile, 1);
 
 	m_code_editor = new CodeWidget();
 	m_layout = new QVBoxLayout();
@@ -40,13 +42,9 @@ Editor::Editor(QWidget *parent)	: QWidget(parent) {
 	connect(m_open, &QPushButton::clicked, this, &Editor::open);
 	connect(m_save, &QPushButton::clicked, this, &Editor::save);
 	connect(m_saveAs, &QPushButton::clicked, this, &Editor::saveAs);
+	connect(m_compile, &QPushButton::clicked, this, &Editor::compile);
 }
 Editor::~Editor() {
-	delete m_new;
-	//delete m_open;
-	//delete m_save;
-	//delete m_saveAs;
-
 	delete m_code_editor;
 }
 void Editor::clear() {
@@ -96,4 +94,7 @@ void Editor::saveAs() {
 		m_current_file->flush();
 		m_current_file->close();
 	}
+}
+void Editor::compile() {
+
 }
