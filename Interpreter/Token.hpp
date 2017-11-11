@@ -5,9 +5,14 @@ enum class TokenType {
 	unknown,
 	commentary,
 	string_literal,
+	int_literal,
 	reserved_word,
 	semicolon,
 	binary_operator,
+	type_name,
+	variable_name,
+	list_name,
+	hash_name
 };
 struct Token {
 	std::string name;

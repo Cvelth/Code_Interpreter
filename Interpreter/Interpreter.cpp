@@ -114,17 +114,50 @@ void unite_operators(std::list<Token> &source) {
 			it2 = it1; it2++;
 		}
 }
+bool check_name(std::string const& source) {
+	if (!isalpha(source[0])) return false;
+	for (size_t i = 1; i < source.size(); i++)
+		if (!isalnum(source[i]) && !source[i] == '_') return false;
+	return true;
+}
+bool check_literal(std::string const& source) {
+	for (size_t i = 0; i < source.size(); i++)
+		if (!isdigit(source[0])) return false;
+	return true;
+}
+TokenType classify_name(std::string const& source) {
+	if (check_name(source))
+		return TokenType::type_name;
+	if (check_literal(source))
+		return TokenType::int_literal;
+
+	if (source[0] == lang::variable)
+		if (check_name(source.substr(1)))
+			return TokenType::variable_name;
+	if (source[0] == lang::list)
+		if (check_name(source.substr(1)))
+			return TokenType::list_name;
+	if (source[0] == lang::hash)
+		if (check_name(source.substr(1)))
+			return TokenType::hash_name;
+
+	throw std::exception(("Unsupported token: " + source).c_str());
+}
+TokenType classify_token(std::string const& name) {
+	if (lang::reserved_words.find(name) != lang::reserved_words.end())
+		return TokenType::reserved_word;
+	else if (name == ";")
+		return TokenType::semicolon;
+	else if (lang::operators_1.find(name) != lang::operators_1.end()
+			 || lang::operators_2.find(name) != lang::operators_2.end())
+		return TokenType::binary_operator;
+	else
+		return classify_name(name);
+}
 void classify_tokens(std::list<Token> &source) {
 	for (auto it = source.begin(); it != source.end(); it++)
-		if (it->type == TokenType::unknown) {
-			if (lang::reserved_words.find(it->name) != lang::reserved_words.end())
-				it->type = TokenType::reserved_word;
-			else if (it->name == ";")
-				it->type = TokenType::semicolon;
-			else if (lang::operators_1.find(it->name) != lang::operators_1.end()
-					 || lang::operators_2.find(it->name) != lang::operators_2.end())
-				it->type = TokenType::binary_operator;
-		}
+		if (it->type == TokenType::unknown)
+			it->type = classify_token(it->name);
 }
 void clean_tokens(std::list<Token> &source) {
 	for (auto it = source.begin(); it != source.end(); it++)

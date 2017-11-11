@@ -4,6 +4,10 @@ namespace lang {
 	const char comment_end = '\n';
 	const char string_literal = '"';
 	const char chars_literal = '\'';
+
+	const char variable = '$';
+	const char list = '@';
+	const char hash = '%';
 }
 #include <set>
 namespace lang {
