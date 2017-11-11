@@ -24,6 +24,7 @@ public:
 	~CodeWidget();
 	void lineNumbersPaintEvent(QPaintEvent *event);
 	int lineNumberWidth();
+	QString getSource() const;
 private slots:
 	void setLineNumberWidth();
 	void highlightCurrentLine();

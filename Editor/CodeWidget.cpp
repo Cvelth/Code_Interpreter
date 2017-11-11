@@ -36,6 +36,9 @@ int CodeWidget::lineNumberWidth() {
 	}
 	return 3 + fontMetrics().width(QLatin1Char('9')) * digits;
 }
+QString CodeWidget::getSource() const {
+	return toPlainText();
+}
 void CodeWidget::highlightCurrentLine() {
 	QList<QTextEdit::ExtraSelection> extraSelections;
 	if (!isReadOnly()) {

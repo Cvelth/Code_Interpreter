@@ -15,17 +15,17 @@ bool Editor::eventFilter(QObject *obj, QEvent *event) {
 	return QObject::eventFilter(obj, event);
 }
 Editor::Editor(QWidget *parent)	: QWidget(parent) {
-	QHBoxLayout *m_buttons = new QHBoxLayout();
-	QPushButton *m_new = new QPushButton("New");
+	m_buttons = new QHBoxLayout();
+	m_new = new QPushButton("New");
 	m_buttons->addWidget(m_new, 1);
-	QPushButton *m_open = new QPushButton("Open");
+	m_open = new QPushButton("Open");
 	m_buttons->addWidget(m_open, 1);
-	QPushButton *m_save = new QPushButton("Save");
+	m_save = new QPushButton("Save");
 	m_buttons->addWidget(m_save, 1);
-	QPushButton *m_saveAs = new QPushButton("Save as");
+	m_saveAs = new QPushButton("Save as");
 	m_buttons->addWidget(m_saveAs, 1);
 	m_buttons->addStretch(3);
-	QPushButton *m_compile = new QPushButton("Compile");
+	m_compile = new QPushButton("Compile");
 	m_buttons->addWidget(m_compile, 1);
 
 	m_code_editor = new CodeWidget();
@@ -46,6 +46,14 @@ Editor::Editor(QWidget *parent)	: QWidget(parent) {
 }
 Editor::~Editor() {
 	delete m_code_editor;
+
+	delete m_new;
+	delete m_open;
+	delete m_save;
+	delete m_saveAs;
+	delete m_compile;
+
+	if (m_current_file) delete m_current_file;
 }
 void Editor::clear() {
 	m_current_file = nullptr;
@@ -95,6 +103,11 @@ void Editor::saveAs() {
 		m_current_file->close();
 	}
 }
+#include "..\Interpreter\Interpreter.hpp"
 void Editor::compile() {
-
+	try {
+		interpret(m_code_editor->getSource().toStdString());
+	} catch (std::exception&) {
+		exit(EXIT_FAILURE);
+	}
 }
