@@ -20,21 +20,41 @@ std::ostream& operator<<(std::ostream &s, Node const& set) {
 
 	return s;
 }
-std::string code_recreation(Syntax const& syntax, bool semantic_result) {
+std::string code_recreation(Syntax const& syntax, bool semantic_result, bool print_comments) {
 	if (!semantic_result)
 		throw std::exception("Semantic_analysis was unsuccessful. Terminating...");
 
 	std::stringstream ret;
+	
+	if (print_comments)
+		ret << "@This file was automatically created.\n"
+			<< "@Do not rewrite this file as all the changes\n"
+			<< "@will be lost on the next compilation.\n\n"
+			<< "@The code was interpreted from Perl(R) language\n" 
+			<< "@using Code_Interpreter v0.1.62dev.\n";
 
+	ret << "\n.data\n";
 	if (!syntax.variables.empty()) {
-		ret << "@Variables used in the file:\n";
+		if (print_comments)
+			ret << "\n@Variables used in the file:\n";
 		ret << syntax.variables;
 	}
 	if (!syntax.constants.empty()) {
-		ret << "@Constants used in the file:\n";
+		if (print_comments)
+			ret << "\n@Constants used in the file:\n";
 		ret << syntax.constants;
 	}
+	ret << "\n.text"
+		<< "\n.extern printf"
+		<< "\n.global main\n\n"
+		<< "main:\n"
+		<< "push {ip, lr}\n\n";
+
 	ret << *syntax.graph;
+
+	ret << "\n\npop {ip, pc}\n\n";
+	if (print_comments)
+		ret << "@End of the code listing.";
 
 	return ret.str();
 }
