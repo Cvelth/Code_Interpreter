@@ -159,9 +159,9 @@ std::shared_ptr<Node> Syntax::parse_operators(std::list<std::shared_ptr<Node>> s
 					ret->left = *(++it);
 					if ((*it)->type != TokenType::type_name)
 						throw std::exception(((*it)->name + " found instead of library name in \"use\" structure.").c_str());
-					if ((*it)->name == "lib") {
+					if (it != --source.end()) {
 						++it;
-						if ((*it)->type != TokenType::string_literal)
+						if (*it != nullptr && (*it)->type != TokenType::string_literal)
 							throw std::exception(((*it)->name + " found instead of string literal in \"use lib\" structure.").c_str());
 						ret->right = parse_graph(std::list<std::shared_ptr<Node>>{it, source.end()});
 					}

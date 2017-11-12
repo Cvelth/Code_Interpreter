@@ -34,5 +34,7 @@ private:
 	std::shared_ptr<Node> parse_graph(std::list<std::shared_ptr<Node>> source);
 	std::shared_ptr<Node> parse_operators(std::list<std::shared_ptr<Node>> source);
 	bool parse_semantics(std::shared_ptr<Node> syntax, TokenType expectedType = TokenType::unknown) const;
-	bool is_string_convertable(std::shared_ptr<Node> syntax) const;
+	bool is_string_convertable(std::shared_ptr<Node> node) const;
+	bool is_rvalue(std::shared_ptr<Node> node) const;
+	bool is_function_arguments(std::shared_ptr<Node> node) const;
 };

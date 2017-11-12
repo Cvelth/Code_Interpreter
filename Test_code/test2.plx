@@ -7,4 +7,4 @@ my $p = Person->new(
 	address => "9.81 Pisa Apts.",
 	occupation => "bombadier"
 );
-print "Surname: " . $p->surname . "\n";
+print "Surname: " . ($p->surname) . "\n";
