@@ -131,7 +131,7 @@ std::ostream& operator<<(std::ostream &s, Node const& node) {
 				s << sh << "ldr r0, " << node.right->name << "_var\n";
 			else if (node.right->type == TokenType::binary_operator && node.right->name == "->" && node.right->right->name == "{}" && node.right->right->right->type == TokenType::type_name) {
 				s << '\n' << sh << "ldr r1, " << node.right->left->name << "_var\n";
-				s << sh << "ldr r2, =" << node.right->right->right->name << "_var\n";
+				s << sh << "ldr r2, " << node.right->right->right->name << "_var\n";
 				s << sh << "add r1, r2\n" << sh << "mov r0, =r1";
 			}
 		} else if (node.name == "use") {
@@ -139,6 +139,10 @@ std::ostream& operator<<(std::ostream &s, Node const& node) {
 				s << ".extern '" << node.right->name << "'";
 			else
 				s << ".extern " << node.left->name;
+		} else if (node.name == "our") {
+			if (node.left->name == "ISA") {
+				s << ".extern " << node.right->name << '\n';
+			}
 		}
 	} else if (node.type == TokenType::int_literal && node.name == "1") {
 		s << "@package " << current_package << " ends here.";
@@ -152,6 +156,9 @@ std::string code_recreation(Syntax const& syntax, bool semantic_result, bool pri
 		throw std::exception("Semantic_analysis was unsuccessful. Terminating...");
 
 	std::stringstream ret;
+	constants.clear();
+	inner_constants.clear();
+	current_package = "";
 	
 	if (print_comments)
 		ret << "@This file was automatically created.\n"
