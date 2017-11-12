@@ -95,6 +95,7 @@ void Editor::open() {
 					QMessageBox::NoButton, this).exec();
 	else
 		m_code_editor->document()->setPlainText(m_current_file->readAll());
+	m_current_file->close();
 }
 void Editor::save() {
 	if (m_current_file) {
