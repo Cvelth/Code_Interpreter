@@ -5,28 +5,32 @@ std::list<Node*> convert_to_nodes(std::list<Token> const& source) {
 		ret.push_back(new Node(it));
 	return ret;
 }
-std::list<Node*> Syntax::parse_brackets(std::list<Node*> source) {
+std::list<Node*> Syntax::parse_brackets(std::list<Node*> source, char bracket_type) {
 	for (auto it = source.begin(); it != source.end(); it++) {
 		if ((*it)->type == TokenType::bracket)
 			if ((*it)->name == "(" || (*it)->name == "[" || (*it)->name == "{") {
 				auto temp = it; temp++;
-				auto nodes = parse_brackets({temp, source.end()});
+				auto nodes = parse_brackets({temp, source.end()}, (*it)->name[0]);
 				source = {source.begin(), it};
 				source.insert(source.end(), nodes.begin(), nodes.end());
 				it = source.begin();
-			} else if ((*it)->name == ")" || (*it)->name == "]" || (*it)->name == "}") {
+			} else if (bracket_type && ((*it)->name == ")" || (*it)->name == "]" || (*it)->name == "}")) {
 				Node *ret = new Node("", TokenType::bracket);
-				if ((*it)->name == ")")
+				if ((*it)->name == ")" && bracket_type == '(')
 					ret->name = "()";
-				else if ((*it)->name == "}")
+				else if ((*it)->name == "}" && bracket_type == '{')
 					ret->name = "{}";
-				else if ((*it)->name == "]")
+				else if ((*it)->name == "]" && bracket_type == '[')
 					ret->name = "[]";
 
 				if (it == source.begin())
 					ret->right = nullptr;
 				else
 					ret->right = parse_graph(std::list<Node*>{ source.begin(), it });
+
+				source = {++it, source.end()};
+				source.push_front(ret);
+				return source;
 			}
 	}
 	return source;
@@ -39,7 +43,13 @@ Node* Syntax::parse_operators(std::list<Node*> source) {
 			variables.insert(source.front());
 		else if (source.front()->type == TokenType::int_literal || source.front()->type == TokenType::string_literal)
 			constants.insert(source.front());
-		else
+		else if (source.front()->type == TokenType::type_name) {
+
+		} else if (source.front()->type == TokenType::reserved_word && (source.front()->name == "shift")) {
+
+		} else if (source.front()->type == TokenType::bracket && (source.front()->name == "()" || source.front()->name == "{}")) {
+
+		} else
 			throw std::exception("Parsing leaf is beint terminated with unsupported simple structure. Please recheck code structure.");
 		return source.front();
 	} else {
@@ -65,11 +75,15 @@ Node* Syntax::parse_operators(std::list<Node*> source) {
 				ret->right = parse_graph(std::list<Node*>{++it, source.end()});
 				return ret;
 			} else if ((*it)->type == TokenType::reserved_word) {
-				if ((*it)->name == "print") {
+				if ((*it)->name == "print" || (*it)->name == "package" || (*it)->name == "my" || (*it)->name == "bless" || (*it)->name == "return") {
 					auto ret = new Node((*it)->name, TokenType::reserved_word);
 					ret->right = parse_graph(std::list<Node*>{++it, source.end()});
 					return ret;
-				}
+				} else if ((*it)->name == "sub") {
+						auto ret = new Node((*it)->name, TokenType::reserved_word);
+						ret->left = *(++it);
+						ret->right = parse_graph(std::list<Node*>{++it, source.end()});
+						return ret;
 			}
 		}
 	}
