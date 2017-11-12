@@ -120,9 +120,10 @@ std::shared_ptr<Node> Syntax::parse_operators(std::list<std::shared_ptr<Node>> s
 					++it;
 					if ((*it)->type != TokenType::bracket || (*it)->name != "{}")
 						throw std::exception(("{}-brackets were expected in foreach but \"" + (*it)->name + "\" was found instead.").c_str());
-					ret->right = *it;
+					right->right = *it;
 					if (it != --source.end())
 						throw std::exception("';' is expected after foreach body.");
+					ret->right = right;
 					return ret;
 				} else if ((*it)->name == "bless") {
 					auto ret = std::make_shared<Node>((*it)->name, TokenType::reserved_word);

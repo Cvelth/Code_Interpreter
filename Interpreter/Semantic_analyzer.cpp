@@ -146,6 +146,16 @@ bool Syntax::parse_semantics(std::shared_ptr<Node> syntax, TokenType expectedTyp
 			} else if (syntax->right != nullptr)
 				throw std::exception(("Unexpected parameter was found in 'lib'-structure: " + syntax->right->name).c_str());
 			return true;
+		} else if (syntax->name == "foreach") {
+			if (syntax->left->type != TokenType::variable_name)
+				throw std::exception(("Variable was expected for 'foreach'-structure, but " + syntax->left->name + " was found instead").c_str());
+			if (syntax->right->type != TokenType::reserved_word || syntax->right->name != "foreach_inner")
+				throw std::exception("'foreach'-structure is corrupted.");
+			if (syntax->right->left->type != TokenType::bracket || syntax->right->left->name != "()" || syntax->right->left->right->type != TokenType::list_name)
+				throw std::exception("Unsupported container was speccified in 'foreach'-structure");
+			if (syntax->right->right->type != TokenType::bracket || syntax->right->right->name != "{}")
+				throw std::exception("Something's wrong with 'foreach'-structure body.");
+			return true;
 		}
 	} else if (syntax->type == TokenType::function) {
 		if (syntax->left->type != TokenType::type_name)
