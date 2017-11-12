@@ -103,20 +103,19 @@ std::shared_ptr<Node> Syntax::parse_operators(std::list<std::shared_ptr<Node>> s
 					++it;
 					if ((*it)->type != TokenType::bracket && (*it)->name == "{}")
 						throw std::exception(("{}-brackets were expected but \"" + (*it)->name + "\" was fount instead.").c_str());
-					ret->right = parse_graph(std::list<std::shared_ptr<Node>>{++it, source.end()});
+					ret->right = *it;
+					if (it != --source.end())
+						throw std::exception("';' is expected after subroutine body.");
 					return ret;
 				} else if ((*it)->name == "bless") {
 					auto ret = std::make_shared<Node>((*it)->name, TokenType::reserved_word);
 					ret->left = *(++it);
-					if ((*it)->type != TokenType::variable_name)
-						throw std::exception(("Incorrect parameter to a bless structure was passed:" + (*it)->name).c_str());
-					++it;
-					if ((*it)->type != TokenType::binary_operator || (*it)->name != ",")
-						throw std::exception(((*it)->name + " found instead of ',' in \"bless\" structure.").c_str());
-					++it;
-					if ((*it)->type != TokenType::variable_name)
-						throw std::exception(("Incorrect parameter to a bless structure was passed:" + (*it)->name).c_str());
-					ret->right = parse_graph(std::list<std::shared_ptr<Node>>{it, source.end()});
+					if ((*it)->type != TokenType::bracket || (*it)->name != "()")
+						throw std::exception(("()-brackets were expected in \"bless\" structure but \'" + (*it)->name + "\' was found instead.").c_str());
+					if ((*it)->right->type != TokenType::binary_operator || (*it)->right->name != "," || (*it)->right->left->type != TokenType::variable_name || (*it)->right->right->type != TokenType::variable_name)
+						throw std::exception(("Two variables were expected to be found in \"bless\" structure but \'" + (*it)->name + "\' was found instead.").c_str());
+					ret->left = (*it)->right->left;
+					ret->right = (*it)->right->right;
 					return ret;
 				} else if ((*it)->name == "my") {
 					auto ret = std::make_shared<Node>((*it)->name, TokenType::reserved_word);
