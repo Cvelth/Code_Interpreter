@@ -11,6 +11,9 @@ class Editor : public QWidget {
 	Q_OBJECT
 private:
 	CodeWidget *m_code_editor;
+	CodeWidget *m_result_editor;
+	QSplitter *m_editor;
+
 	QPlainTextEdit *m_error_widget;
 
 	QSplitter *m_splitter;
