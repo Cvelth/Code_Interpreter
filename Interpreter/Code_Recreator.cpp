@@ -67,16 +67,30 @@ std::ostream& operator<<(std::ostream &s, Node const& node) {
 	} else if (node.type == TokenType::binary_operator) {
 		if (node.name == ".") {
 			string_concat(s, node, 0);
+		} else if (node.name == "+=") {
+			if (node.right->type == TokenType::variable_name)
+				s << '\n' << sh << "ldr r0, " << node.left->name << "_var\n"
+					<< sh << "ldr r1, " << node.right->name << "_var\n"
+					<< sh << "adds r0, r1\n"
+					<< sh << "str r0, " << node.left->name << "_var\n";
+			else if (node.right->type == TokenType::int_literal)
+				s << sh << "ldr r0, " << node.left->name << "_var\n"
+					<< sh << "ldr r1, =_constant_" << constants[node.right->name] << "\n"
+					<< sh << "adds r0, r1\n"
+					<< sh << "str r0, " << node.left->name << "_var\n";
 		}
 	} else if (node.type == TokenType::reserved_word) {
 		if (node.name == "print") {
 			if (node.right->type == TokenType::string_literal) {
 				inner_constants.insert(std::make_pair("%s", variable_index++));
-				s << sh << "mov r0, =" << "_inner_constant_" << inner_constants["%s"]
+				s << sh << "ldr r0, =" << "_inner_constant_" << inner_constants["%s"]
 					<< "\n" << sh << "mov r1, =_constant_" << constants[node.right->name]
 					<< "\n" << sh << "bl printf\n";
 			} else if (node.right->type == TokenType::binary_operator && node.right->name == ".") {
-				s << *node.right;
+				s << *node.right
+					<< "\n" << sh << "ldr r0, =" << "_inner_constant_" << inner_constants["%s"]
+					<< "\n" << sh << "mov r1, =_inner_constant_" << inner_constants["\"\""]
+					<< "\n" << sh << "bl printf\n";
 			}
 		} else if (node.name == "package") {
 			s << "@package " << current_package << " start here.\n";
@@ -85,7 +99,7 @@ std::ostream& operator<<(std::ostream &s, Node const& node) {
 			s << current_package << "_" << node.left->name << ":\n"
 				<< sh << "@Subroutine arguments:\n"
 				<< sh << sh << "@r0 - " << current_package << "-pointer\n"
-				<< sh << sh << "@r1 - pointer to the argument list (@)\n"
+				<< sh << sh << "@r1 - pointer to the argument list {@_}\n"
 				<< sh << "push {r4, lr}\n"
 				<< *node.right
 				<< sh << "pop {r4, pc}\n";
@@ -93,9 +107,12 @@ std::ostream& operator<<(std::ostream &s, Node const& node) {
 			if (node.right->type == TokenType::variable_name)
 				s << '\n' << sh << "ldr r0, " << node.right->name << "_var\n"
 					<< sh << "str r0, " << node.left->name << "_var\n";
+			else if (node.right->type == TokenType::int_literal)
+				s << "ldr r0, =_constant_" << constants[node.right->name] << "\n"
+				<< "str r0, " << node.left->name << "_var\n";
 			else if (node.right->type == TokenType::reserved_word && node.right->name == "shift") {
 				inner_constants.insert(std::make_pair(current_package, variable_index++));
-				s << '\n' << sh << "ldr r0, " << inner_constants[current_package] << "_var\n"
+				s << '\n' << sh << "ldr r0, " << "_inner_constant_" << inner_constants[current_package] << "\n"
 					<< sh << "str r0, " << node.left->name << "_var";
 			} else if (node.right->type == TokenType::bracket && node.right->name == "{}") {
 				s << '\n' << sh << "ldr r0, " << (node.right->right->name == "_" ? "r1" : ("=" + node.right->right->name + "_list")) << '\n'
@@ -111,10 +128,10 @@ std::ostream& operator<<(std::ostream &s, Node const& node) {
 				<< sh << "str r0, " << node.left->name << "_var\n";
 		} else if (node.name == "return") {
 			if (node.right->type == TokenType::variable_name)
-				s << sh << "ldr r0, " << node.right->name << "_var";
+				s << sh << "ldr r0, " << node.right->name << "_var\n";
 			else if (node.right->type == TokenType::binary_operator && node.right->name == "->" && node.right->right->name == "{}" && node.right->right->right->type == TokenType::type_name) {
 				s << '\n' << sh << "ldr r1, " << node.right->left->name << "_var\n";
-				s << sh << "ldr r1, =" << node.right->right->right->name << "_var\n";
+				s << sh << "ldr r2, =" << node.right->right->right->name << "_var\n";
 				s << sh << "add r1, r2\n" << sh << "mov r0, =r1";
 			}
 		} else if (node.name == "use") {
@@ -176,7 +193,7 @@ std::string code_recreation(Syntax const& syntax, bool semantic_result, bool pri
 		if (print_comments)
 			ret << "@Constants used in the interpreter:\n";
 		for (auto it : inner_constants) 
-			ret << "_inner_constant_" << it.second << ":\t.asciz\t\"" << it.first << "\n";
+			ret << "_inner_constant_" << it.second << ":\t.asciz\t\"" << it.first << "\"\n";
 	}
 
 	if (print_comments)
