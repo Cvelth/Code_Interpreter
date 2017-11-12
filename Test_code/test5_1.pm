@@ -8,6 +8,6 @@ sub draw {
 	return "A Circle was drawn at (" 
 	. $self->{x} . ", " . $self->{y} . ", " . $self->{z} . ") "
 	. "with radius: " . $self->{r} . "\n";
-}
+};
 
 1;

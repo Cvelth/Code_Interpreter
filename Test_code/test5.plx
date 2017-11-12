@@ -12,4 +12,4 @@ use test5_2;
 );
 foreach $a (@geometry) {
 	print $a->draw();
-}
+};

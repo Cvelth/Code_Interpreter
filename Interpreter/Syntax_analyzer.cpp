@@ -101,11 +101,28 @@ std::shared_ptr<Node> Syntax::parse_operators(std::list<std::shared_ptr<Node>> s
 					if ((*it)->type != TokenType::type_name)
 						throw std::exception(("Incorrect name of a subroutine was passed:" + (*it)->name).c_str());
 					++it;
-					if ((*it)->type != TokenType::bracket && (*it)->name == "{}")
-						throw std::exception(("{}-brackets were expected but \"" + (*it)->name + "\" was fount instead.").c_str());
+					if ((*it)->type != TokenType::bracket || (*it)->name != "{}")
+						throw std::exception(("{}-brackets were expected but \"" + (*it)->name + "\" was found instead.").c_str());
 					ret->right = *it;
 					if (it != --source.end())
 						throw std::exception("';' is expected after subroutine body.");
+					return ret;
+				} else if ((*it)->name == "foreach") {
+					auto ret = std::make_shared<Node>((*it)->name, TokenType::reserved_word);
+					ret->left = *(++it);
+					if ((*it)->type != TokenType::variable_name)
+						throw std::exception(("Incorrect name of a variable was passed:" + (*it)->name).c_str());
+					++it;
+					auto right = std::make_shared<Node>("foreach_inner", TokenType::reserved_word);
+					if ((*it)->type != TokenType::bracket || (*it)->name != "()")
+						throw std::exception(("()-brackets were expected in foreach but \"" + (*it)->name + "\" was found instead.").c_str());
+					right->left = *it;
+					++it;
+					if ((*it)->type != TokenType::bracket || (*it)->name != "{}")
+						throw std::exception(("{}-brackets were expected in foreach but \"" + (*it)->name + "\" was found instead.").c_str());
+					ret->right = *it;
+					if (it != --source.end())
+						throw std::exception("';' is expected after foreach body.");
 					return ret;
 				} else if ((*it)->name == "bless") {
 					auto ret = std::make_shared<Node>((*it)->name, TokenType::reserved_word);
