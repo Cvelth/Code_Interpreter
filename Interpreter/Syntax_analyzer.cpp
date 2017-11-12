@@ -55,8 +55,17 @@ std::shared_ptr<Node> Syntax::parse_operators(std::list<std::shared_ptr<Node>> s
 	} else {
 		for (auto it = source.begin(); it != source.end(); it++) {
 			if ((*it)->type == TokenType::semicolon) {
-				auto ret = std::make_shared<Node>((*it)->name,
-									TokenType::semicolon);
+				auto ret = std::make_shared<Node>((*it)->name, TokenType::semicolon);
+				if (it != source.begin())
+					ret->left = parse_graph(std::list<std::shared_ptr<Node>>{source.begin(), it});
+				if (it != --source.end())
+					ret->right = parse_graph(std::list<std::shared_ptr<Node>>{++it, source.end()});
+				return ret;
+			}
+		}
+		for (auto it = source.begin(); it != source.end(); it++) {
+			if ((*it)->type == TokenType::binary_operator && (*it)->name == ",") {
+				auto ret = std::make_shared<Node>((*it)->name, TokenType::binary_operator);
 				if (it != source.begin())
 					ret->left = parse_graph(std::list<std::shared_ptr<Node>>{source.begin(), it});
 				if (it != --source.end())
@@ -69,7 +78,7 @@ std::shared_ptr<Node> Syntax::parse_operators(std::list<std::shared_ptr<Node>> s
 				source.erase(it);
 				it = source.begin();
 			} 
-			if ((*it)->type == TokenType::binary_operator) {
+			if ((*it)->type == TokenType::binary_operator && (*it)->name != ",") {
 				auto ret = std::make_shared<Node>((*it)->name, TokenType::binary_operator);
 				ret->left = parse_graph(std::list<std::shared_ptr<Node>>{source.begin(), it});
 				ret->right = parse_graph(std::list<std::shared_ptr<Node>>{++it, source.end()});
@@ -119,10 +128,25 @@ std::shared_ptr<Node> Syntax::parse_operators(std::list<std::shared_ptr<Node>> s
 						throw std::exception(((*it)->name + " found instead of '=' in \"my\" structure.").c_str());
 					ret->right = parse_graph(std::list<std::shared_ptr<Node>>{++it, source.end()});
 					return ret;
+				} else if ((*it)->name == "use") {
+					auto ret = std::make_shared<Node>((*it)->name, TokenType::reserved_word);
+					ret->left = *(++it);
+					if ((*it)->type != TokenType::type_name)
+						throw std::exception(((*it)->name + " found instead of library name in \"use\" structure.").c_str());
+					if ((*it)->name == "lib") {
+						++it;
+						if ((*it)->type != TokenType::string_literal)
+							throw std::exception(((*it)->name + " found instead of string literal in \"use lib\" structure.").c_str());
+						ret->right = parse_graph(std::list<std::shared_ptr<Node>>{it, source.end()});
+					}
+					return ret;
 				}
 			}
 		}
 	}
+	if (source.size() == 2)
+		if (source.front()->type == TokenType::type_name && source.back()->type == TokenType::bracket && source.back()->name == "()")
+			return std::make_shared<Node>(source.front()->name, TokenType::function, source.front(), source.back()->right);
 	throw std::exception("Some operations are unaccessible for the parser. Recheck code structure.");
 }
 std::shared_ptr<Node> Syntax::parse_graph(std::list<std::shared_ptr<Node>> source) {
