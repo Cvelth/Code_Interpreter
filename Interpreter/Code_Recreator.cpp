@@ -1,6 +1,7 @@
 #include "Interpreter.hpp"
 #include <sstream>
 #include <map>
+std::ostream& operator<<(std::ostream &s, Node const& node);
 size_t variable_index = 0;
 std::string const sh("\t");
 std::map<std::string, size_t> constants;
@@ -31,6 +32,17 @@ void insert_parameter(std::ostream &s, Node const& node, size_t &r) {
 		s << sh << "ldr r" << r++ << ", =" << "_constant_" << constants[node.right->name] << '\n';
 	}
 }
+void generate_list(std::ostream &s, Node const& node, size_t &l) {
+	if (node.type == TokenType::binary_operator && node.name == ",") {
+		generate_list(s, *node.left, l);
+		generate_list(s, *node.right, l);
+	} else if (node.type == TokenType::binary_operator && node.name == "->") {
+			size_t r = 0;
+			insert_parameter(s, *node.right->right, r);
+			s << sh << "bl " << node.left->name << "_" << node.right->name << "\n";
+			s << sh << "str r" << l++ << ", =" << node.left->name << "_var\n";
+		}
+}
 void string_concat(std::ostream &s, Node const& node, size_t l) {
 	inner_constants.insert(std::make_pair("%s", variable_index++));
 	if (node.left->type == TokenType::binary_operator && node.left->name == ".")
@@ -53,11 +65,11 @@ void string_concat(std::ostream &s, Node const& node, size_t l) {
 		s << "\n" << sh << "mov r0, =" << "_constant_" << constants[node.right->name] << '\n'
 			<< sh << "mov r2, =" << "_inner_constant_" << inner_constants["\"\""] << '\n'
 			<< sh << "mov r4, #128\n"
-			<< sh << "loop_l_" << l << ":\n"
+			<< sh << "loop_r_" << l << ":\n"
 			<< sh << sh << "ldrb r3, [r0], #1\n"
 			<< sh << sh << "strb r3, [r2], #1\n"
 			<< sh << sh << "subs r4, #1\n"
-			<< sh << "bne loop_l_" << l << "\n";
+			<< sh << "bne loop_r_" << l << "\n";
 	}
 }
 std::ostream& operator<<(std::ostream &s, Node const& node) {
@@ -78,6 +90,15 @@ std::ostream& operator<<(std::ostream &s, Node const& node) {
 					<< sh << "ldr r1, =_constant_" << constants[node.right->name] << "\n"
 					<< sh << "adds r0, r1\n"
 					<< sh << "str r0, " << node.left->name << "_var\n";
+		} else if (node.name == "=") {
+			size_t r = 4;
+			generate_list(s, *node.right->right, r);
+			s << "\n" << sh << "ldr r0, =" << node.left->name << "_var\n"
+				<< sh << "mov r4, [r0], #1\n"
+				<< sh << "mov r5, [r0], #1\n"
+				<< sh << "mov r6, [r0], #1\n"
+				<< sh << "mov r7, [r0], #1\n"
+				<< sh << "mov r8, [r0], #1\n";
 		}
 	} else if (node.type == TokenType::reserved_word) {
 		if (node.name == "print") {
@@ -133,6 +154,11 @@ std::ostream& operator<<(std::ostream &s, Node const& node) {
 				s << '\n' << sh << "ldr r1, " << node.right->left->name << "_var\n";
 				s << sh << "ldr r2, " << node.right->right->right->name << "_var\n";
 				s << sh << "add r1, r2\n" << sh << "mov r0, =r1";
+			} else if (node.right->type == TokenType::binary_operator && node.right->name == ".") {
+				s << *node.right
+					<< '\n' << sh << "ldr r1, _inner_constant_" << inner_constants["%s"] << "\n"
+					<< sh << "ldr r2, =_inner_constant_" << inner_constants["\"\""] << "\n"
+					<< sh << "add r1, r2\n" << sh << "mov r0, =r1";
 			}
 		} else if (node.name == "use") {
 			if (node.left->name == "lib")
@@ -143,6 +169,17 @@ std::ostream& operator<<(std::ostream &s, Node const& node) {
 			if (node.left->name == "ISA") {
 				s << ".extern " << node.right->name << '\n';
 			}
+		} else if (node.name == "foreach") {
+			s << sh << "ldr r5, " << node.right->left->right->name << "_list\n"
+				<< sh << "mov r6, #0\n"
+				<< sh << "loop_f_" << variable_index++ << ":\n"
+				<< sh << sh << "mov r0, [r5, r6]\n"
+				<< sh << sh << "bl " << "Point_" << node.right->right->right->left->right->right->name << "\n"
+				<< sh << sh << "mov r1, r0\n"
+				<< sh << sh << "ldr r0, =" << "_inner_constant_" << inner_constants["%s"] << "\n"
+				<< sh << sh << "bl printf\n"
+				<< sh << sh << "add r6, #1\n"
+				<< sh << sh << "bne loop_f_" << variable_index - 1 << "\n";
 		}
 	} else if (node.type == TokenType::int_literal && node.name == "1") {
 		s << "@package " << current_package << " ends here.";
