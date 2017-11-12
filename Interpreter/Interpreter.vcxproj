@@ -117,6 +117,7 @@
   <ItemGroup>
     <ClInclude Include="Default_lanuage.hpp" />
     <ClInclude Include="dll.hpp" />
+    <ClInclude Include="Syntax.hpp" />
     <ClInclude Include="Interpreter.hpp" />
     <ClInclude Include="Perl.hpp" />
     <ClInclude Include="Token.hpp" />
@@ -124,6 +125,7 @@
   <ItemGroup>
     <ClCompile Include="Interpreter.cpp" />
     <ClCompile Include="Lexical_analyzer.cpp" />
+    <ClCompile Include="Syntax_analyzer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

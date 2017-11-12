@@ -177,6 +177,8 @@ void clean_tokens(std::list<Token> &source) {
 		}
 }
 std::list<Token> lexical_analysis(std::string const& source) {
+	if (source == "")
+		throw std::exception("There's nothing to analyse. No code was passed.");
 	std::list<Token> res{source};
 	separate_comments_and_strings(res);
 	split_on_separators(res, " \t\n");

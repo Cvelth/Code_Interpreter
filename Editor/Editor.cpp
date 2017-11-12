@@ -130,15 +130,19 @@ void Editor::saveAs() {
 void Editor::compile() {
 	try {
 		m_error_widget->clear();
-		m_error_widget->appendPlainText("Compilation started...");
+		m_error_widget->appendPlainText("Compilation has started...");
 
-		m_error_widget->appendPlainText("Lexical Analysis started...");
-		auto lexemes = lexical_analysis(m_code_editor->getSource().toStdString());
-		m_error_widget->appendPlainText("Lexical Analysis successful...");
+		m_error_widget->appendPlainText("Lexical Analysis has started...");
+		auto tokens = lexical_analysis(m_code_editor->getSource().toStdString());
+		m_error_widget->appendPlainText("Lexical Analysis was successful...");
 
-		m_error_widget->appendPlainText("Compilation successful...");
+		m_error_widget->appendPlainText("Syntax Analysis has started...");
+		auto syntax = syntax_analysis(tokens);
+		m_error_widget->appendPlainText("Syntax Analysis was successful...");
+
+		m_error_widget->appendPlainText("Compilation was successful...");
 	} catch (std::exception &e) {
 		m_error_widget->appendPlainText(QString("\t") + e.what());
-		m_error_widget->appendPlainText("Error occured. Terminating compilation...");
+		m_error_widget->appendPlainText("Error has occured. Terminating compilation...");
 	}
 }
