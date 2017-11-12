@@ -202,7 +202,7 @@ std::string code_recreation(Syntax const& syntax, bool semantic_result, bool pri
 			<< "@Do not rewrite this file as all the changes\n"
 			<< "@will be lost on the next compilation.\n\n"
 			<< "@The code was interpreted from Perl(R) language\n" 
-			<< "@using Code_Interpreter v0.1.62dev.\n";
+			<< "@using Code_Interpreter v0.1.70dev.\n";
 
 	if (!syntax.variables.empty() || !syntax.constants.empty())
 		ret << "\n.data\n";
