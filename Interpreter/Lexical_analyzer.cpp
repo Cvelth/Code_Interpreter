@@ -156,9 +156,12 @@ TokenType classify_token(std::string const& name) {
 		return classify_name(name);
 }
 void classify_tokens(std::list<Token> &source) {
-	for (auto it = source.begin(); it != source.end(); it++)
+	for (auto it = source.begin(); it != source.end(); it++) {
 		if (it->type == TokenType::unknown)
 			it->type = classify_token(it->name);
+		if (it->type == TokenType::variable_name || it->type == TokenType::list_name || it->type == TokenType::hash_name)
+			it->name = it->name.substr(1);
+	}
 }
 void clean_tokens(std::list<Token> &source) {
 	for (auto it = source.begin(); it != source.end(); it++)
