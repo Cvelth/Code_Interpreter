@@ -81,17 +81,17 @@ bool Syntax::parse_semantics(std::shared_ptr<Node> syntax, TokenType expectedTyp
 		} else if (syntax->name == "->") {
 			if (syntax->right->type == TokenType::function) {
 				if (syntax->left->type != TokenType::type_name)
-					throw std::exception(("Typename was expected as left-hand argument of operator-> for static methods, but " + syntax->right->name + " was found instead").c_str());
+					throw std::exception(("Typename was expected as left-hand argument of operator-> for static methods, but " + syntax->left->name + " was found instead").c_str());
 				return parse_semantics(syntax->right);
 			} else {
 				if (syntax->left->type != TokenType::variable_name)
-					throw std::exception(("Variable was expected as left-hand argument of operator-> for method calls, but " + syntax->right->name + " was found instead").c_str());
+					throw std::exception(("Variable was expected as left-hand argument of operator-> for method calls, but " + syntax->left->name + " was found instead").c_str());
 				if (syntax->right->type != TokenType::type_name && !(syntax->right->type == TokenType::bracket && syntax->right->name == "{}" && syntax->right->right->type == TokenType::type_name))
 					throw std::exception(("'Typename' or '{typename}' was expected as right-hand operator of operator->, but " + syntax->right->name + " was found instead").c_str());
 			} 
 		} else if(syntax->name == "+=") {
 			if (syntax->left->type != TokenType::variable_name)
-				throw std::exception(("Variable was expected as left-hand argument of operator+=, but " + syntax->right->name + " was found instead").c_str());
+				throw std::exception(("Variable was expected as left-hand argument of operator+=, but " + syntax->left->name + " was found instead").c_str());
 			if (!is_rvalue(syntax->right))
 				throw std::exception(("rvalue was expected as right-hand argument of operator+=, but " + syntax->right->name + " was found instead").c_str());
 		}
@@ -99,41 +99,47 @@ bool Syntax::parse_semantics(std::shared_ptr<Node> syntax, TokenType expectedTyp
 	} else if (syntax->type == TokenType::reserved_word) {
 		if (syntax->name == "print") {
 			if (syntax->left != nullptr)
-				throw std::exception(("There must be nothing to the left of print-structure, but " + syntax->right->name + " was found").c_str());
+				throw std::exception(("There must be nothing to the left of print-structure, but " + syntax->left->name + " was found").c_str());
 			return is_string_convertable(syntax->right);
 		} else if (syntax->name == "package") {
 			if (syntax->left != nullptr)
-				throw std::exception(("There must be nothing to the left of package-structure, but " + syntax->right->name + " was found").c_str());
+				throw std::exception(("There must be nothing to the left of package-structure, but " + syntax->left->name + " was found").c_str());
 			if (syntax->right->type != TokenType::type_name)
 				throw std::exception(("Typename was expected in package-structure, but " + syntax->right->name + " was found instead").c_str());
 			return true;
 		} else if (syntax->name == "return") {
 			if (syntax->left != nullptr)
-				throw std::exception(("There must be nothing to the left of return-structure, but " + syntax->right->name + " was found").c_str());
+				throw std::exception(("There must be nothing to the left of return-structure, but " + syntax->left->name + " was found").c_str());
 			if (!is_rvalue(syntax->right))
 				throw std::exception(("rvalue was expected in return-structure, but " + syntax->right->name + " was found instead").c_str());
 			return true;
 		} else if (syntax->name == "sub") {
 			if (syntax->left->type != TokenType::type_name)
-				throw std::exception(("Typename was expected for subroutine initialization, but " + syntax->right->name + " was found instead").c_str());
+				throw std::exception(("Typename was expected for subroutine initialization, but " + syntax->left->name + " was found instead").c_str());
 			if (syntax->right->type != TokenType::bracket || syntax->right->name != "{}")
 				throw std::exception(("Body of the subroutine was expected, but " + syntax->right->name + " was found instead").c_str());
 			return parse_semantics(syntax->right);
 		} else if (syntax->name == "my") {
 			if (syntax->left->type != TokenType::variable_name)
-				throw std::exception(("Variable was expected for 'my'-structure, but " + syntax->right->name + " was found instead").c_str());
+				throw std::exception(("Variable was expected for 'my'-structure, but " + syntax->left->name + " was found instead").c_str());
 			if (!is_rvalue(syntax->right))
 				throw std::exception(("Body of the subroutine was expected, but " + syntax->right->name + " was found instead").c_str());
 			return true;
+		} else if (syntax->name == "our") {
+			if (syntax->left->type != TokenType::list_name)
+				throw std::exception(("List was expected for 'our'-structure, but " + syntax->left->name + " was found instead").c_str());
+			if (syntax->right->type != TokenType::type_name)
+				throw std::exception(("Typename was expected for 'our'-structure, but " + syntax->right->name + " was found instead").c_str());
+			return true;
 		} else if (syntax->name == "bless") {
 			if (syntax->left->type != TokenType::variable_name)
-				throw std::exception(("Variable was expected for 'bless'-structure, but " + syntax->right->name + " was found instead").c_str());
+				throw std::exception(("Variable was expected for 'bless'-structure, but " + syntax->left->name + " was found instead").c_str());
 			if (syntax->right->type != TokenType::variable_name)
 				throw std::exception(("Variable was expected for 'bless'-structure, but " + syntax->right->name + " was found instead").c_str());
 			return true;
 		} else if (syntax->name == "use") {
 			if (syntax->left->type != TokenType::type_name)
-				throw std::exception(("Typename was expected for 'use'-structure, but " + syntax->right->name + " was found instead").c_str());
+				throw std::exception(("Typename was expected for 'use'-structure, but " + syntax->left->name + " was found instead").c_str());
 			if (syntax->left->name == "lib") {
 				if (syntax->right->type != TokenType::string_literal)
 					throw std::exception(("String literal was expected for 'use lib'-structure, but " + syntax->right->name + " was found instead").c_str());

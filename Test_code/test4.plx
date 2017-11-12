@@ -15,5 +15,5 @@ my $object2 = Student->new (
 	occupation => "student",
 	grade => "A"
 );
-print $p->surname, "\t\t", $p->grade, "\n";
-print $object2->surname, "\t", $object2->grade, "\n";
+print ($p->surname) . "\t\t" . ($p->grade) . "\n";
+print ($object2->surname) . "\t" . ($object2->grade) . "\n";
