@@ -13,4 +13,4 @@ my $object2 = Person->new (
 	address => "9E16, Relativity Drive",
 	occupation => "Plumber"
 );
-print "Population now: " . Person->population . "\n";
+print "Population now: " . ($p->population) . "\n";

@@ -88,9 +88,14 @@ bool Syntax::parse_semantics(std::shared_ptr<Node> syntax, TokenType expectedTyp
 					throw std::exception(("Variable was expected as left-hand argument of operator-> for method calls, but " + syntax->right->name + " was found instead").c_str());
 				if (syntax->right->type != TokenType::type_name && !(syntax->right->type == TokenType::bracket && syntax->right->name == "{}" && syntax->right->right->type == TokenType::type_name))
 					throw std::exception(("'Typename' or '{typename}' was expected as right-hand operator of operator->, but " + syntax->right->name + " was found instead").c_str());
-			}
-			return true;
+			} 
+		} else if(syntax->name == "+=") {
+			if (syntax->left->type != TokenType::variable_name)
+				throw std::exception(("Variable was expected as left-hand argument of operator+=, but " + syntax->right->name + " was found instead").c_str());
+			if (!is_rvalue(syntax->right))
+				throw std::exception(("rvalue was expected as right-hand argument of operator+=, but " + syntax->right->name + " was found instead").c_str());
 		}
+		return true;
 	} else if (syntax->type == TokenType::reserved_word) {
 		if (syntax->name == "print") {
 			if (syntax->left != nullptr)
