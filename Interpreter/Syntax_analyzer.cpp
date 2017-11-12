@@ -120,9 +120,10 @@ std::shared_ptr<Node> Syntax::parse_operators(std::list<std::shared_ptr<Node>> s
 					++it;
 					if ((*it)->type != TokenType::bracket || (*it)->name != "{}")
 						throw std::exception(("{}-brackets were expected in foreach but \"" + (*it)->name + "\" was found instead.").c_str());
-					ret->right = *it;
+					right->right = *it;
 					if (it != --source.end())
 						throw std::exception("';' is expected after foreach body.");
+					ret->right = right;
 					return ret;
 				} else if ((*it)->name == "bless") {
 					auto ret = std::make_shared<Node>((*it)->name, TokenType::reserved_word);
@@ -159,9 +160,9 @@ std::shared_ptr<Node> Syntax::parse_operators(std::list<std::shared_ptr<Node>> s
 					ret->left = *(++it);
 					if ((*it)->type != TokenType::type_name)
 						throw std::exception(((*it)->name + " found instead of library name in \"use\" structure.").c_str());
-					if ((*it)->name == "lib") {
+					if (it != --source.end()) {
 						++it;
-						if ((*it)->type != TokenType::string_literal)
+						if (*it != nullptr && (*it)->type != TokenType::string_literal)
 							throw std::exception(((*it)->name + " found instead of string literal in \"use lib\" structure.").c_str());
 						ret->right = parse_graph(std::list<std::shared_ptr<Node>>{it, source.end()});
 					}

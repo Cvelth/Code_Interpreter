@@ -22,8 +22,8 @@ sub z {
 
 sub draw {
 	my $self = shift;
-	return "A Point was drawn at (" . $self->{x} . ", " 
-	. $self->{y} . ", " . $self->{z} . ")\n";
+	return "A Point was drawn at (" . ($self->{x}) . ", " 
+	. ($self->{y}) . ", " . ($self->{z}) . ")\n";
 };
 
 1;

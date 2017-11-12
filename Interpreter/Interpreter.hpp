@@ -5,4 +5,5 @@
 #include "Syntax.hpp"
 DLL std::list<Token> lexical_analysis(std::string const& source);
 DLL Syntax syntax_analysis(std::list<Token> const& source);
+DLL bool semantic_analysis(Syntax const& syntax);
 DLL std::string interpret(std::string const& source);

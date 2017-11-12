@@ -28,8 +28,13 @@ public:
 	std::set<Node> constants;
 	std::shared_ptr<Node> graph;
 	Syntax(std::list<Token> const& source);
+	bool check_semantics() const;
 private:
 	std::list<std::shared_ptr<Node>> parse_brackets(std::list<std::shared_ptr<Node>> source, char bracket_type = 0);
 	std::shared_ptr<Node> parse_graph(std::list<std::shared_ptr<Node>> source);
 	std::shared_ptr<Node> parse_operators(std::list<std::shared_ptr<Node>> source);
+	bool parse_semantics(std::shared_ptr<Node> syntax, TokenType expectedType = TokenType::unknown) const;
+	bool is_string_convertable(std::shared_ptr<Node> node) const;
+	bool is_rvalue(std::shared_ptr<Node> node) const;
+	bool is_function_arguments(std::shared_ptr<Node> node) const;
 };

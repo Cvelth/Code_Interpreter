@@ -140,6 +140,10 @@ void Editor::compile() {
 		auto syntax = syntax_analysis(tokens);
 		m_error_widget->appendPlainText("Syntax Analysis was successful...");
 
+		m_error_widget->appendPlainText("Semantic Analysis has started...");
+		auto result = semantic_analysis(syntax);
+		m_error_widget->appendPlainText("Semantic Analysis was successful...");
+
 		m_error_widget->appendPlainText("Compilation was successful...");
 	} catch (std::exception &e) {
 		m_error_widget->appendPlainText(QString("\t") + e.what());
