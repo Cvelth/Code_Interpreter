@@ -125,6 +125,7 @@
   <ItemGroup>
     <ClCompile Include="Interpreter.cpp" />
     <ClCompile Include="Lexical_analyzer.cpp" />
+    <ClCompile Include="Semantic_analyzer.cpp" />
     <ClCompile Include="Syntax_analyzer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
