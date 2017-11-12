@@ -30,13 +30,22 @@ Editor::Editor(QWidget *parent)	: QWidget(parent) {
 	m_buttons->addWidget(m_compile, 1);
 
 	m_code_editor = new CodeWidget();
+	m_result_editor = new CodeWidget();
+	m_result_editor->hide();
+	m_result_editor->setReadOnly(true);
+
+	m_editor = new QSplitter();
+	m_editor->addWidget(m_code_editor);
+	m_editor->addWidget(m_result_editor);
+
 	m_upper_layout = new QVBoxLayout();
 	m_upper_layout->addLayout(m_buttons);
-	m_upper_layout->addWidget(m_code_editor);
+	m_upper_layout->addWidget(m_editor);
 	m_upper_widget = new QWidget();
 	m_upper_widget->setLayout(m_upper_layout);
 
 	m_error_widget = new QPlainTextEdit();
+	m_error_widget->setTabStopWidth(fontMetrics().width(QLatin1Char('9')) * 8);
 
 	m_splitter = new QSplitter(Qt::Orientation::Vertical);
 	m_splitter->addWidget(m_upper_widget);
@@ -70,6 +79,9 @@ Editor::~Editor() {
 	delete m_main_layout;
 
 	delete m_code_editor;
+	delete m_result_editor;
+	delete m_editor;
+
 	delete m_error_widget;
 
 	delete m_upper_widget;
@@ -143,6 +155,13 @@ void Editor::compile() {
 		m_error_widget->appendPlainText("Semantic Analysis has started...");
 		auto result = semantic_analysis(syntax);
 		m_error_widget->appendPlainText("Semantic Analysis was successful...");
+
+		m_error_widget->appendPlainText("Code Recreation has started...");
+		auto code = code_recreation(syntax, result);
+		m_error_widget->appendPlainText("Code Recreation was successful...");
+
+		m_result_editor->setPlainText(QString::fromStdString(code));
+		m_result_editor->show();
 
 		m_error_widget->appendPlainText("Compilation was successful...");
 	} catch (std::exception &e) {
