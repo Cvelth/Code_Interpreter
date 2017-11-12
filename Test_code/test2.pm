@@ -3,7 +3,7 @@ package Person;
 sub new {
 	my $class = shift;
 	my $self = {@_};
-	bless ($self, $class);
+	bless $self, $class;
 	return $self;
 };
 

@@ -43,9 +43,9 @@ std::shared_ptr<Node> Syntax::parse_operators(std::list<std::shared_ptr<Node>> s
 			variables.insert(*source.front());
 		else if (source.front()->type == TokenType::int_literal || source.front()->type == TokenType::string_literal)
 			constants.insert(*source.front());
-		else if (source.front()->type == TokenType::type_name) {
-
-		} else if (source.front()->type == TokenType::reserved_word && (source.front()->name == "shift")) {
+		else if (source.front()->type == TokenType::type_name)
+			typenames.insert(*source.front());
+		else if (source.front()->type == TokenType::reserved_word && (source.front()->name == "shift")) {
 
 		} else if (source.front()->type == TokenType::bracket && (source.front()->name == "()" || source.front()->name == "{}")) {
 
@@ -75,13 +75,48 @@ std::shared_ptr<Node> Syntax::parse_operators(std::list<std::shared_ptr<Node>> s
 				ret->right = parse_graph(std::list<std::shared_ptr<Node>>{++it, source.end()});
 				return ret;
 			} else if ((*it)->type == TokenType::reserved_word) {
-				if ((*it)->name == "print" || (*it)->name == "package" || (*it)->name == "my" || (*it)->name == "bless" || (*it)->name == "return") {
+				if ((*it)->name == "print" || (*it)->name == "return") {
 					auto ret = std::make_shared<Node>((*it)->name, TokenType::reserved_word);
 					ret->right = parse_graph(std::list<std::shared_ptr<Node>>{++it, source.end()});
+					return ret;
+				} else if ((*it)->name == "package") {
+					auto ret = std::make_shared<Node>((*it)->name, TokenType::reserved_word);
+					++it;
+					if ((*it)->type != TokenType::type_name)
+						throw std::exception(("Incorrect name of a package was passed:" + (*it)->name).c_str());
+					ret->right = parse_graph(std::list<std::shared_ptr<Node>>{it, source.end()});
 					return ret;
 				} else if ((*it)->name == "sub") {
 					auto ret = std::make_shared<Node>((*it)->name, TokenType::reserved_word);
 					ret->left = *(++it);
+					if ((*it)->type != TokenType::type_name)
+						throw std::exception(("Incorrect name of a subroutine was passed:" + (*it)->name).c_str());
+					++it;
+					if ((*it)->type != TokenType::bracket && (*it)->name == "{}")
+						throw std::exception(("{}-brackets were expected but \"" + (*it)->name + "\" was fount instead.").c_str());
+					ret->right = parse_graph(std::list<std::shared_ptr<Node>>{++it, source.end()});
+					return ret;
+				} else if ((*it)->name == "bless") {
+					auto ret = std::make_shared<Node>((*it)->name, TokenType::reserved_word);
+					ret->left = *(++it);
+					if ((*it)->type != TokenType::variable_name)
+						throw std::exception(("Incorrect parameter to a bless structure was passed:" + (*it)->name).c_str());
+					++it;
+					if ((*it)->type != TokenType::binary_operator || (*it)->name != ",")
+						throw std::exception(((*it)->name + " found instead of ',' in \"bless\" structure.").c_str());
+					++it;
+					if ((*it)->type != TokenType::variable_name)
+						throw std::exception(("Incorrect parameter to a bless structure was passed:" + (*it)->name).c_str());
+					ret->right = parse_graph(std::list<std::shared_ptr<Node>>{it, source.end()});
+					return ret;
+				} else if ((*it)->name == "my") {
+					auto ret = std::make_shared<Node>((*it)->name, TokenType::reserved_word);
+					ret->left = *(++it);
+					if ((*it)->type != TokenType::variable_name)
+						throw std::exception(((*it)->name + " found instead of variable name in \"my\" structure.").c_str());
+					++it;
+					if ((*it)->type != TokenType::binary_operator || (*it)->name != "=")
+						throw std::exception(((*it)->name + " found instead of '=' in \"my\" structure.").c_str());
 					ret->right = parse_graph(std::list<std::shared_ptr<Node>>{++it, source.end()});
 					return ret;
 				}

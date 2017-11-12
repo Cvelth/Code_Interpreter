@@ -23,6 +23,7 @@ struct Node : public Token {
 #include <set>
 class Syntax {
 public:
+	std::set<Node> typenames;
 	std::set<Node> variables;
 	std::set<Node> constants;
 	std::shared_ptr<Node> graph;
