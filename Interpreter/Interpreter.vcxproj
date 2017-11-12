@@ -123,6 +123,7 @@
     <ClInclude Include="Token.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Code_Recreator.cpp" />
     <ClCompile Include="Interpreter.cpp" />
     <ClCompile Include="Lexical_analyzer.cpp" />
     <ClCompile Include="Semantic_analyzer.cpp" />
