@@ -17,6 +17,8 @@ CodeWidget::CodeWidget(QWidget *parent)	: QPlainTextEdit(parent) {
 		if (rect.contains(viewport()->rect())) setLineNumberWidth();
 	});
 	connect(this, &CodeWidget::cursorPositionChanged, this, &CodeWidget::highlightCurrentLine);
+
+	setTabStopWidth(fontMetrics().width(QLatin1Char('9')) * 8);
 	
 	setLineNumberWidth();
 	highlightCurrentLine();

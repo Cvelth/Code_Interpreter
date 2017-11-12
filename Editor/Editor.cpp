@@ -45,6 +45,7 @@ Editor::Editor(QWidget *parent)	: QWidget(parent) {
 	m_upper_widget->setLayout(m_upper_layout);
 
 	m_error_widget = new QPlainTextEdit();
+	m_error_widget->setTabStopWidth(fontMetrics().width(QLatin1Char('9')) * 8);
 
 	m_splitter = new QSplitter(Qt::Orientation::Vertical);
 	m_splitter->addWidget(m_upper_widget);
