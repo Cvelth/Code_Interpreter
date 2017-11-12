@@ -127,6 +127,16 @@ std::shared_ptr<Node> Syntax::parse_operators(std::list<std::shared_ptr<Node>> s
 						throw std::exception(((*it)->name + " found instead of '=' in \"my\" structure.").c_str());
 					ret->right = parse_graph(std::list<std::shared_ptr<Node>>{++it, source.end()});
 					return ret;
+				} else if ((*it)->name == "our") {
+					auto ret = std::make_shared<Node>((*it)->name, TokenType::reserved_word);
+					ret->left = *(++it);
+					if ((*it)->type != TokenType::list_name || (*it)->name != "ISA")
+						throw std::exception(((*it)->name + " found instead of \"@ISA\" in \"our\" structure. \"our\" structure is only supported for package inheritance in current implementation.").c_str());
+					++it;
+					if ((*it)->type != TokenType::binary_operator || (*it)->name != "=")
+						throw std::exception(((*it)->name + " found instead of '=' in \"my\" structure.").c_str());
+					ret->right = parse_graph(std::list<std::shared_ptr<Node>>{++it, source.end()});
+					return ret;
 				} else if ((*it)->name == "use") {
 					auto ret = std::make_shared<Node>((*it)->name, TokenType::reserved_word);
 					ret->left = *(++it);
